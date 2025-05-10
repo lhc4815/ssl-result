@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SSL 고교선택적성검사 결과</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+    <script src="js/dataProcessor.js"></script>
+    <script src="js/data.js"></script>
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+
+        h1, h2 {
+            color: #333;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #5A3A22;
+            padding-bottom: 10px;
+        }
+
+        h2 {
+            margin-top: 40px;
+            margin-bottom: 20px;
+            border-left: 5px solid #5A3A22;
+            padding-left: 10px;
+        }
+
+        #loading, #error {
+            text-align: center;
+            padding: 20px;
+            font-size: 18px;
+        }
+
+        #error {
+            color: #dc3545;
+            font-weight: bold;
+        }
+
+        .student-info {
+            display: flex;
+            flex-wrap: wrap;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .student-info-item {
+            flex: 1 1 200px;
+            margin: 10px;
+            padding: 5px;
+        }
+
+        .student-info-item strong {
+            font-weight: bold;
+            display: inline-block;
+            width: 100px;
+        }
+
+        .chart-container {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 30px;
+            height: 400px;
+            position: relative;
+        }
+
+        .radar-chart-container {
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 30px;
+            height: 600px;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .normal-dist-charts {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .normal-chart-container {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 15px;
+            height: 300px;
+            position: relative;
+        }
+
+        .scale-data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+            background-color: #fff;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .scale-data-table th, .scale-data-table td {
+            padding: 12px;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+
+        .scale-data-table th {
+            background-color: #5A3A22;
+            color: white;
+            font-weight: bold;
+        }
+
+        .scale-data-table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .scale-data-table tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        @media (max-width: 768px) {
+            .normal-dist-charts {
+                grid-template-columns: 1fr;
+            }
+            .student-info-item {
+                flex: 1 1 100%;
+            }
+            .scale-data-table {
+                font-size: 14px;
+            }
+            .scale-data-table th, .scale-data-table td {
+                padding: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>SSL 고교선택적성검사 결과</h1>
+    
+    <div id="loading">데이터를 불러오는 중...</div>
+    <div id="error" style="display: none;"></div>
+    
+    <div id="report-content" style="display: none;">
+        <!-- 학생 정보 섹션 -->
+        <div class="student-info">
+            <div class="student-info-item">
+                <strong>학생 ID:</strong> <span id="studentId"></span>
+            </div>
+            <div class="student-info-item">
+                <strong>학생명:</strong> <span id="studentName"></span>
+            </div>
+            <div class="student-info-item">
+                <strong>출신학교:</strong> <span id="studentSchool"></span>
+            </div>
+            <div class="student-info-item">
+                <strong>검사일:</strong> <span id="testDate"></span>
+            </div>
+        </div>
+        
+        <!-- 1. 6척도 절대점수 프로파일 -->
+        <h2>1. 6척도 절대점수 프로파일 (방사형 차트)</h2>
+        <div class="radar-chart-container">
+            <canvas id="radarChart"></canvas>
+        </div>
+        
+        <!-- 2. 6척도 점수 요약 -->
+        <h2>2. 6척도 점수 요약</h2>
+        <table class="scale-data-table">
+            <thead>
+                <tr>
+                    <th>척도</th>
+                    <th>총점<br>(200점 만점)</th>
+                    <th>평균점수<br>(5점 만점)</th>
+                    <th>Z점수</th>
+                    <th>백분위</th>
+                    <th>상위</th>
+                </tr>
+            </thead>
+            <tbody id="scaleTableBody">
+                <!-- 동적으로 채워짐 -->
+            </tbody>
+        </table>
+        
+        <!-- 3. 6척도 상대점수 (표준정규분포) -->
+        <h2>3. 6척도 상대점수 (표준정규분포)</h2>
+        <div class="normal-dist-charts">
+            <div class="normal-chart-container">
+                <canvas id="selfRegulationChart"></canvas>
+            </div>
+            <div class="normal-chart-container">
+                <canvas id="extracurricularChart"></canvas>
+            </div>
+            <div class="normal-chart-container">
+                <canvas id="internalAcademicChart"></canvas>
+            </div>
+            <div class="normal-chart-container">
+                <canvas id="languageProcessingChart"></canvas>
+            </div>
+            <div class="normal-chart-container">
+                <canvas id="engineeringThinkingChart"></canvas>
+            </div>
+            <div class="normal-chart-container">
+                <canvas id="medicalAptitudeChart"></canvas>
+            </div>
+        </div>
+        
+        <!-- 4. 교과형 vs 종합형, 서류형 vs 면접형 -->
+        <h2>4. 교과형 vs 종합형, 서류형 vs 면접형</h2>
+        <div class="chart-container">
+            <canvas id="quadrantChart"></canvas>
+        </div>
+        
+        <!-- 5. 학업성취도 분석 -->
+        <h2>5. 학업성취도 분석</h2>
+        <div class="chart-container">
+            <canvas id="academicChart"></canvas>
+        </div>
+    </div>
+    
+    <script>
+        // 기본 설정
+        Chart.register(ChartDataLabels);
+        
+        // URL 파라미터 가져오기
+        const urlParams = new URLSearchParams(window.location.search);
+        const studentId = urlParams.get('id');
+        const studentName = urlParams.get('name');
+        
+        // DOM 요소
+        const loadingDiv = document.getElementById('loading');
+        const errorDiv = document.getElementById('error');
+        const reportContentDiv = document.getElementById('report-content');
+        
+        // 메인 코드
+        if (!studentId || !studentName) {
+            window.location.href = 'index.html';
+        } else {
+            // 데이터 로드 시작 시 로딩 표시
+            loadingDiv.style.display = 'block';
+            reportContentDiv.style.display = 'none';
+            
+            // data.js의 getStudentData 함수 사용
+            getStudentData(studentId, studentName)
+                .then(studentData => {
+                    // 학생 기본 정보 표시
+                    document.getElementById('studentId').textContent = studentData.id;
+                    document.getElementById('studentName').textContent = studentData.name;
+                    document.getElementById('studentSchool').textContent = studentData.school;
+                    document.getElementById('testDate').textContent = studentData.testDate;
+                    
+                    // UI 업데이트
+                    loadingDiv.style.display = 'none';
+                    reportContentDiv.style.display = 'block';
+                    
+                    // 차트 생성
+                    createRadarChart(studentData);
+                    createNormalDistCharts(studentData);
+                    updateScaleTable(studentData);
+                    createQuadrantChart(studentData);
+                    createAcademicChart(studentData);
+                    
+                    console.log('학생 데이터 로드 완료: ', studentData.name);
+                })
+                .catch(error => {
+                    loadingDiv.style.display = 'none';
+                    errorDiv.style.display = 'block';
+                    errorDiv.innerText = error.message || '학생 정보를 찾을 수 없습니다.';
+                    console.error('데이터 로드 오류:', error);
+                });
+        }
+        
+        // 방사형 차트 생성 함수
+        function createRadarChart(studentData) {
+            const ctx = document.getElementById('radarChart').getContext('2d');
+            // 5점 만점 점수 사용
+            const averageScores = SCALES.map(scale => studentData.scaleScores5[scale.key]);
+            
+            // 파스텔톤 색상 정의
+            const pastelBlue = 'rgba(116, 185, 255, 0.5)';
+            const pastelColors = [
+                'rgba(116, 185, 255, 1)',    // 파스텔 블루
+                'rgba(162, 222, 208, 1)',    // 파스텔 민트
+                'rgba(153, 102, 255, 1)',    // 파스텔 퍼플
+                'rgba(255, 205, 86, 1)',     // 파스텔 옐로우
+                'rgba(255, 159, 64, 1)',     // 파스텔 오렌지
+                'rgba(201, 203, 207, 1)'     // 파스텔 그레이
+            ];
+            
+            new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: SCALES.map(scale => scale.name),
+                    datasets: [{
+                        label: '5점 만점 평균',
+                        data: averageScores,
+                        backgroundColor: pastelBlue,
+                        borderColor: 'rgb(85, 165, 240)',
+                        pointBackgroundColor: pastelColors,
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: 'rgb(54, 162, 235)',
+                        borderWidth: 1.5,
+                        pointRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            min: 0,
+                            max: 5,
+                            ticks: { 
+                                stepSize: 1,
+                                color: 'rgba(0, 0, 0, 0.5)'
+                            },
+                            angleLines: {
+                                color: 'rgba(0, 0, 0, 0.1)'
+                            },
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.1)'
+                            },
+                            pointLabels: {
+                                color: '#333333',
+                                font: {
+                                    size: 16,
+                                    weight: 'bold'
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: '6척도 절대점수 프로파일',
+                            color: '#333333',
+                            font: { size: 18, weight: 'bold' }
+                        },
+                        legend: {
+                            display: false
+                        },
+                        datalabels: {
+                            color: '#333333',
+                            backgroundColor: 'rgba(255, 255, 255, 0.7)',
+                            borderRadius: 4,
+                            formatter: (value) => value.toFixed(1),
+                            font: { weight: 'bold', size: 12 }
+                        }
+                    }
+                }
+            });
+        }
+        
+        // 정규분포 차트 생성
+        function createNormalDistCharts(studentData) {
+            SCALES.forEach(scale => {
+                const chartId = scale.key + 'Chart';
+                const ctx = document.getElementById(chartId).getContext('2d');
+                const score = studentData.scaleScores[scale.key];
+                const zScore = studentData.scaleZScores[scale.key]; // Z점수 직접 사용
+                const percentile = calculatePercentile(zScore);
+                
+                const normalDistData = generateNormalDistributionData(NORMAL_DIST.mean, NORMAL_DIST.stdDev, NORMAL_DIST.minScore, NORMAL_DIST.maxScore);
+                const studentAreaData = normalDistData.filter(point => point.x >= score);
+                
+                // 학생 위치 y값 계산
+                const normalFactor = 1 / (NORMAL_DIST.stdDev * Math.sqrt(2 * Math.PI));
+                const exponent = -Math.pow((score - NORMAL_DIST.mean) / NORMAL_DIST.stdDev, 2) / 2;
+                const studentY = normalFactor * Math.exp(exponent);
+                
+                new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        datasets: [
+                            {
+                                label: '정규분포',
+                                data: normalDistData,
+                                borderColor: 'rgba(100, 100, 100, 0.5)',
+                                backgroundColor: 'rgba(100, 100, 100, 0.1)',
+                                borderWidth: 2,
+                                fill: true,
+                                tension: 0.4,
+                                pointRadius: 0
+                            },
+                            {
+                                label: '상위 영역',
+                                data: studentAreaData,
+                                borderColor: scale.color,
+                                backgroundColor: scale.color.replace('0.7', '0.3'),
+                                borderWidth: 2,
+                                fill: true,
+                                tension: 0.4,
+                                pointRadius: 0
+                            },
+                            {
+                                label: '학생 위치',
+                                data: [{ x: score, y: studentY }],
+                                backgroundColor: scale.color,
+                                borderColor: scale.color,
+                                pointRadius: 8,
+                                pointHoverRadius: 10,
+                                showLine: false
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            x: {
+                                type: 'linear',
+                                min: NORMAL_DIST.minScore,
+                                max: NORMAL_DIST.maxScore,
+                                title: { display: true, text: '점수', font: { weight: 'bold' } }
+                            },
+                            y: {
+                                beginAtZero: true,
+                                ticks: { display: false },
+                                title: { display: true, text: '빈도', font: { weight: 'bold' } }
+                            }
+                        },
+                        plugins: {
+                            legend: { display: false },
+                            title: {
+                                display: true,
+                                text: scale.name,
+                                font: { size: 16, weight: 'bold' }
+                            },
+                            subtitle: {
+                                display: true,
+                                text: `Z점수: ${zScore.toFixed(2)}, 백분위: ${percentile}%`,
+                                font: { size: 12 }
+                            },
+                            datalabels: {
+                                display: ctx => ctx.datasetIndex === 2,
+                                color: '#000000',
+                                backgroundColor: 'rgba(255, 255, 255, 0.7)',
+                                borderRadius: 4,
+                                padding: 4,
+                                font: { weight: 'bold', size: 11 },
+                                formatter: () => `상위 ${(100 - percentile).toFixed(1)}%`
+                            }
+                        }
+                    }
+                });
+            });
+        }
+        
+        // 점수 테이블 업데이트
+        function updateScaleTable(studentData) {
+            const tableBody = document.getElementById('scaleTableBody');
+            tableBody.innerHTML = '';
+            
+            SCALES.forEach(scale => {
+                const score = studentData.scaleScores[scale.key];
+                const averageScore = studentData.scaleScores5[scale.key]; // 5점 만점 점수 직접 사용
+                const zScore = studentData.scaleZScores[scale.key]; // Z점수 직접 사용
+                const percentile = calculatePercentile(zScore);
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${scale.name}</td>
+                    <td>${score}</td>
+                    <td>${averageScore.toFixed(1)}</td>
+                    <td>${zScore.toFixed(2)}</td>
+                    <td>${percentile}%</td>
+                    <td>상위 ${(100 - percentile).toFixed(1)}%</td>
+                `;
+                
+                tableBody.appendChild(row);
+            });
+        }
+        
+        // 사분면 차트 생성
+        function createQuadrantChart(studentData) {
+            const ctx = document.getElementById('quadrantChart').getContext('2d');
+            
+            new Chart(ctx, {
+                type: 'scatter',
+                data: {
+                    datasets: [
+                        {
+                            label: '학생 위치',
+                            data: [{ x: studentData.quadrantData.x, y: studentData.quadrantData.y }],
+                            backgroundColor: 'rgba(255, 99, 132, 1)',
+                            borderColor: 'rgba(255, 99, 132, 1)',
+                            pointRadius: 10,
+                            pointHoverRadius: 12
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                scales: {
+                    x: {
+                        min: -25,
+                        max: 25,
+                        title: { 
+                            display: true, 
+                            text: '교과형(-) ⟷ 종합형(+)', 
+                            font: { weight: 'bold' } 
+                        },
+                        grid: {
+                            color: context => context.tick.value === 0 ? 'rgba(0, 0, 0, 0.5)' : 'rgba(0, 0, 0, 0.1)',
+                            lineWidth: context => context.tick.value === 0 ? 2 : 1
+                        }
+                    },
+                    y: {
+                        min: -25,
+                        max: 25,
+                        title: { 
+                            display: true, 
+                            text: '면접형(-) ⟷ 서류형(+)', 
+                            font: { weight: 'bold' } 
+                        },
+                        grid: {
+                            color: context => context.tick.value === 0 ? 'rgba(0, 0, 0, 0.5)' : 'rgba(0, 0, 0, 0.1)',
+                            lineWidth: context => context.tick.value === 0 ? 2 : 1
+                        }
+                    }
+                },
+                    plugins: {
+                        legend: { display: false },
+                        title: {
+                            display: true,
+                            text: '교과형-종합형 / 면접형-서류형 분석',
+                            font: { size: 16, weight: 'bold' }
+                        },
+                        datalabels: {
+                            display: true,
+                            formatter: () => studentName,
+                            font: { weight: 'bold' },
+                            offset: 10,
+                            anchor: 'center',
+                            align: 'top'
+                        }
+                    }
+                }
+            });
+        }
+        
+        // 학업성취도 차트 생성
+        function createAcademicChart(studentData) {
+            const ctx = document.getElementById('academicChart').getContext('2d');
+            
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['영어', '수학'],
+                    datasets: [
+                        {
+                            label: '점수',
+                            data: [
+                                studentData.academicData.english.score,
+                                studentData.academicData.math.score
+                            ],
+                            backgroundColor: [
+                                'rgba(54, 162, 235, 0.7)',
+                                'rgba(255, 159, 64, 0.7)'
+                            ],
+                            borderColor: [
+                                'rgb(54, 162, 235)',
+                                'rgb(255, 159, 64)'
+                            ],
+                            borderWidth: 1
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 50,
+                            title: { 
+                                display: true, 
+                                text: '점수', 
+                                font: { weight: 'bold' } 
+                            }
+                        },
+                        x: {
+                            title: { 
+                                display: true, 
+                                text: '교과목', 
+                                font: { weight: 'bold' } 
+                            }
+                        }
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: '학업성취도 분석',
+                            font: { size: 16, weight: 'bold' }
+                        },
+                        subtitle: {
+                            display: true,
+                            text: '영어/수학 점수 비교',
+                            font: { size: 14 }
+                        },
+                        datalabels: {
+                            anchor: 'end',
+                            align: 'top',
+                            formatter: (value, context) => {
+                                const zScore = context.dataIndex === 0 ? 
+                                    studentData.academicData.english.zScore : 
+                                    studentData.academicData.math.zScore;
+                                const percentile = calculatePercentile(zScore);
+                                return `${value}점\n상위 ${(100 - percentile).toFixed(1)}%`;
+                            },
+                            font: { weight: 'bold', size: 12 }
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>
