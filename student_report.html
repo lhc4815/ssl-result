@@ -8,6 +8,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
     <script src="js/dataProcessor.js"></script>
     <script src="js/data.js"></script>
+    <script src="js/highSchoolRecommendation.js"></script>
     <style>
         body {
             font-family: 'Noto Sans KR', sans-serif;
@@ -241,6 +242,36 @@
         <div class="chart-container">
             <canvas id="academicChart"></canvas>
         </div>
+        
+        <!-- 6. 고교 추천 결과 -->
+        <h2>6. 고교 추천 결과</h2>
+        <div class="school-recommendation-container" style="background-color: #fff; border-radius: 8px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); padding: 20px; margin-bottom: 30px;">
+            <table class="scale-data-table" id="recommendationTable">
+                <thead>
+                    <tr>
+                        <th>지망</th>
+                        <th>추천 고등학교</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>1지망</strong></td>
+                        <td id="firstChoice">분석 중...</td>
+                    </tr>
+                    <tr>
+                        <td><strong>2지망</strong></td>
+                        <td id="secondChoice">분석 중...</td>
+                    </tr>
+                    <tr>
+                        <td><strong>3지망</strong></td>
+                        <td id="thirdChoice">분석 중...</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p style="margin-top: 15px; color: #666; font-size: 14px; text-align: center;">
+                * 이 추천 결과는 학생의 적성과 학업 성취도를 바탕으로 한 참고용 정보입니다.
+            </p>
+        </div>
     </div>
     
     <script>
@@ -284,6 +315,12 @@
                     updateScaleTable(studentData);
                     createQuadrantChart(studentData);
                     createAcademicChart(studentData);
+                    
+                    // 고교 추천 결과 처리
+                    const recommendations = getHighSchoolRecommendations(studentData);
+                    document.getElementById('firstChoice').textContent = recommendations[1] || '조건에 맞는 추천 없음';
+                    document.getElementById('secondChoice').textContent = recommendations[2] || '조건에 맞는 추천 없음';
+                    document.getElementById('thirdChoice').textContent = recommendations[3] || '조건에 맞는 추천 없음';
                     
                     console.log('학생 데이터 로드 완료: ', studentData.name);
                 })
