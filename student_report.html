@@ -150,6 +150,13 @@
             .scale-data-table th, .scale-data-table td {
                 padding: 8px;
             }
+            .radar-chart-container {
+                height: 400px; /* 모바일에서 더 적합한 높이로 조정 */
+                padding: 10px;
+            }
+            .chart-container {
+                height: 350px; /* 다른 차트도 모바일에 맞게 조정 */
+            }
         }
     </style>
 </head>
@@ -305,6 +312,9 @@
                 'rgba(201, 203, 207, 1)'     // 파스텔 그레이
             ];
             
+            // 모바일인지 확인
+            const isMobile = window.innerWidth <= 768;
+            
             new Chart(ctx, {
                 type: 'radar',
                 data: {
@@ -319,7 +329,7 @@
                         pointHoverBackgroundColor: '#fff',
                         pointHoverBorderColor: 'rgb(54, 162, 235)',
                         borderWidth: 1.5,
-                        pointRadius: 6
+                        pointRadius: isMobile ? 4 : 6
                     }]
                 },
                 options: {
@@ -342,7 +352,7 @@
                             pointLabels: {
                                 color: '#333333',
                                 font: {
-                                    size: 16,
+                                    size: isMobile ? 12 : 16,
                                     weight: 'bold'
                                 }
                             }
@@ -353,7 +363,7 @@
                             display: true,
                             text: '6척도 절대점수 프로파일',
                             color: '#333333',
-                            font: { size: 18, weight: 'bold' }
+                            font: { size: isMobile ? 14 : 18, weight: 'bold' }
                         },
                         legend: {
                             display: false
@@ -363,7 +373,7 @@
                             backgroundColor: 'rgba(255, 255, 255, 0.7)',
                             borderRadius: 4,
                             formatter: (value) => value.toFixed(1),
-                            font: { weight: 'bold', size: 12 }
+                            font: { weight: 'bold', size: isMobile ? 10 : 12 }
                         }
                     }
                 }
@@ -443,20 +453,20 @@
                             title: {
                                 display: true,
                                 text: scale.name,
-                                font: { size: 16, weight: 'bold' }
+                                font: { size: window.innerWidth <= 768 ? 14 : 16, weight: 'bold' }
                             },
                             subtitle: {
                                 display: true,
                                 text: `Z점수: ${zScore.toFixed(2)}, 백분위: ${percentile}%`,
-                                font: { size: 12 }
+                                font: { size: window.innerWidth <= 768 ? 10 : 12 }
                             },
                             datalabels: {
                                 display: ctx => ctx.datasetIndex === 2,
                                 color: '#000000',
                                 backgroundColor: 'rgba(255, 255, 255, 0.7)',
                                 borderRadius: 4,
-                                padding: 4,
-                                font: { weight: 'bold', size: 11 },
+                                padding: window.innerWidth <= 768 ? 2 : 4,
+                                font: { weight: 'bold', size: window.innerWidth <= 768 ? 9 : 11 },
                                 formatter: () => `상위 ${(100 - percentile).toFixed(1)}%`
                             }
                         }
