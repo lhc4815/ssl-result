@@ -274,9 +274,11 @@ document.addEventListener('DOMContentLoaded', function() {
                                 size: 11
                             },
                             padding: 4,
-                            formatter: function() {
-                                return `상위 ${100 - percentile}%`;
-                            }
+                        formatter: function(value, context) {
+                            const zScore = calculateZScore(studentData.scaleScores[scale.key], NORMAL_DIST.mean, NORMAL_DIST.stdDev);
+                            const percentile = calculatePercentile(zScore);
+                            return `상위 ${(100 - percentile).toFixed(1)}%`;
+                        }
                         }
                     }
                 }
@@ -310,5 +312,15 @@ document.addEventListener('DOMContentLoaded', function() {
         `;
         
         tableBody.appendChild(row);
-    });
-}
+        });
+    }
+
+    // 닫는 괄호 추가: createQuadrantChart와 createAcademicChart 함수 정의
+    function createQuadrantChart(studentData) {
+        // 구현될 예정
+    }
+
+    function createAcademicChart(studentData) {
+        // 구현될 예정
+    }
+});

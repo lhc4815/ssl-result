@@ -1,4 +1,4 @@
-// 샘플 학생 데이터 (Excel에서 변환)
+// 학생 데이터 (Excel에서 자동 변환 - 2025. 5. 12. 오후 4:07:24)
 const studentsData = {
   "STU0001": {
     "학생ID": "STU0001",
@@ -1090,11 +1090,11 @@ const studentsData = {
 // 학생 데이터 가져오기 함수
 function getStudentData(id, name) {
     return new Promise((resolve, reject) => {
-        // 샘플 구현에서는 로컬 데이터 사용
+        // 로컬 데이터에서 학생 찾기
         setTimeout(() => {
             const excelData = studentsData[id];
             if (excelData && excelData.학생성명 === name) {
-                // Excel 데이터를 내부 데이터 구조로 변환
+                // Excel 데이터를 내부 데이터 구조로 변환 (dataProcessor.js의 함수 사용)
                 const processedData = processExcelData(excelData);
                 resolve(processedData);
             } else {
@@ -1103,3 +1103,6 @@ function getStudentData(id, name) {
         }, 500); // 서버 요청 시뮬레이션
     });
 }
+
+// dataProcessor.js에서 정의된 processExcelData 함수는 유지합니다.
+// 이 함수는 js/dataProcessor.js에 정의되어 있으므로 data.js에서는 접근 가능합니다.
