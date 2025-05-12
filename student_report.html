@@ -238,8 +238,13 @@
         
         <!-- 4. 입시성향분석 - 교과형 vs 종합형, 서류형 vs 면접형 -->
         <h2>4. 입시성향분석 - 교과형 vs 종합형, 서류형 vs 면접형</h2>
-        <div class="chart-container">
-            <canvas id="quadrantChart"></canvas>
+        <div class="chart-container" style="height: 550px; padding-bottom: 100px;">
+            <canvas id="quadrantChart" style="margin-bottom: 50px;"></canvas>
+            <div style="margin-top: 30px; margin-bottom: 20px; padding: 15px; background-color: #f9f9f9; border-radius: 8px; width: 90%; margin-left: auto; margin-right: auto;">
+                <p style="margin: 0; color: #555; font-size: 14px; text-align: left; line-height: 1.5;">
+                    교과형/종합형과 서류형/면접형 중 학생에게 더 유리한 입시전형 성향을 분석하며 향후 고교 활동 및 대입 준비 방향을 설정하는 기준으로 활용할 수 있습니다.
+                </p>
+            </div>
         </div>
         
         <!-- 5. 학업성취도 분석 -->
@@ -296,13 +301,13 @@
         </div>
         
         <!-- 7. 대입전략 수립 -->
-        <h2>7. 대입전략 수립</h2>
+        <h2>7. 계열별 대입전략 수립</h2>
         <div class="university-strategy-container" style="background-color: #fff; border-radius: 8px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); padding: 20px; margin-bottom: 30px;">
             <table class="scale-data-table" id="strategyTable">
                 <thead>
                     <tr>
                         <th>순위</th>
-                        <th>추천 대입전략</th>
+                        <th>추천 계열</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -330,7 +335,7 @@
                     </p>
                 </div>
                 <div style="background-color: #f9f9f9; border-radius: 8px; padding: 20px; margin-bottom: 15px;">
-                    <h3 style="font-size: 16px; margin: 0 0 15px 0; color: #333; border-bottom: 1px solid #ddd; padding-bottom: 8px;">학생부종합형 대비 전략</h3>
+                    <h3 style="font-size: 16px; margin: 0 0 15px 0; color: #333; border-bottom: 1px solid #ddd; padding-bottom: 8px;">학생부종합전형 대비 전략</h3>
                     <p style="line-height: 1.6; margin: 0 0 10px 0;">
                         비교과수행능력이 상위 18% 수준으로 프로젝트형 탐구 활동 또는 교내외 발표 및 자율보고서에 참여를 통해 비교과 포트폴리오를 심화시켜야 하며,
                         수행평가에서 자신의 탐구과정을 상세히 기록해야합니다. 
@@ -338,6 +343,47 @@
                     <p style="line-height: 1.6; margin: 0;">
                         교과 연계 발표 주제 및 독서활동 기록을 풍부하게 채우고 탐구활동을 확장시킬 수 있도록 학기별 발표기회나 소논문 작성을 선제적으로 계획할 필요가 있습니다.
                     </p>
+                </div>
+                
+                <!-- 대입 역량 그라데이션 차트 -->
+                <div style="margin-top: 25px; padding: 15px; background-color: #f9f9f9; border-radius: 8px;">
+                    <h3 style="font-size: 16px; margin: 0 0 15px 0; color: #333; border-bottom: 1px solid #ddd; padding-bottom: 8px;">학생부 관리 스펙트럼</h3>
+                    
+                    <!-- 첫 번째 그라데이션 바 -->
+                    <div style="margin-bottom: 30px; position: relative;">
+                        <div style="height: 40px; background: linear-gradient(to right, #2B4C7E, #FFFFFF); border-radius: 4px; margin-bottom: 10px; position: relative;">
+                            <!-- 학생 위치 표시 화살표 -->
+                            <div style="position: absolute; top: -25px; left: 15%; transform: translateX(-50%);">
+                                <div style="color: #FF0000; font-size: 24px; font-weight: bold;">↓</div>
+                                <div style="color: #FF0000; font-size: 12px; font-weight: bold;">학생</div>
+                            </div>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-top: 5px;">
+                            <div style="text-align: left; font-weight: bold; font-size: 14px;">활동의 확장성 및 심화탐구능력(A)</div>
+                            <div style="text-align: right; font-weight: bold; font-size: 14px;">활동의 안정성 및 교과 내 탐구능력(B)</div>
+                        </div>
+                        <p style="margin-top: 10px; font-size: 13px; line-height: 1.5; color: #555;">
+                            활동의 확장성 및 심화탐구능력이 높을수록, 진로역량 배점을 높일 수 있는 발표, 보고서 활동을 추천합니다. 반면, 활동의 안정성 및 교과 내 탐구능력이 높을수록 교과 내 개념을 충실히 기입하는 활동이 주가 됩니다.
+                        </p>
+                    </div>
+                    
+                    <!-- 두 번째 그라데이션 바 -->
+                    <div style="position: relative;">
+                        <div style="height: 40px; background: linear-gradient(to right, #2B4C7E, #FFFFFF); border-radius: 4px; margin-bottom: 10px; position: relative;">
+                            <!-- 학생 위치 표시 화살표 -->
+                            <div style="position: absolute; top: -25px; left: 20%; transform: translateX(-50%);">
+                                <div style="color: #FF0000; font-size: 24px; font-weight: bold;">↓</div>
+                                <div style="color: #FF0000; font-size: 12px; font-weight: bold;">해당위치</div>
+                            </div>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-top: 5px;">
+                            <div style="text-align: left; font-weight: bold; font-size: 14px;">수행평가 및 <span style="text-decoration: underline;">비</span>교과 활동 중요성</div>
+                            <div style="text-align: right; font-weight: bold; font-size: 14px;">교과성취도 및 이수과목의 중요성</div>
+                        </div>
+                        <p style="margin-top: 10px; font-size: 13px; line-height: 1.5; color: #555;">
+                            수행평가 및 비교과 활동 중요성이 높을수록 교과보다 종합전형에 적합한 학생이며 수행활동에 적극적 태도가 필요합니다. 반면, 교과성취도 및 이수과목 중요성이 높을수록 교과형, 추천형에 적합하며 GPA 중심 학습전략이 효과적입니다.
+                        </p>
+                    </div>
                 </div>
             </div>
             
@@ -347,13 +393,13 @@
         </div>
         
         <!-- 8. 전체 입시 로드맵 -->
-        <h2>8. 전체 입시 로드맵</h2>
+        <h2>8. 학생부 로드맵 예시</h2>
         <div class="admission-roadmap-container" style="background-color: #fff; border-radius: 8px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); padding: 20px; margin-bottom: 30px;">
             <div id="roadmapContainer">
                 <!-- 로드맵이 이 곳에 렌더링됩니다 -->
             </div>
             <p style="margin-top: 15px; color: #666; font-size: 14px; text-align: center;">
-                * 이 입시 로드맵은 학생의 적성과 역량을 바탕으로 한 전체적인 입시 계획 참고 자료입니다.
+                * 이 입시 로드맵은 학생의 적성과 역량을 바탕으로 한 전체적인 입시 계획 참고 자료로 실제 로드맵은 상담을 거쳐 작성됩니다.
             </p>
         </div>
         
