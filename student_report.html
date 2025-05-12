@@ -13,6 +13,7 @@
     <script src="js/admissionRoadmap.js"></script>
     <script src="js/academicImprovement.js"></script>
     <script src="js/overallAssessment.js"></script>
+    <link rel="stylesheet" href="css/navy-theme.css">
     <style>
         body {
             font-family: 'Noto Sans KR', sans-serif;
@@ -248,7 +249,7 @@
         </div>
         
         <!-- 6. 고교 추천 결과 -->
-        <h2>6. 고교 추천 결과</h2>
+        <h2>6. 진학고교 추천</h2>
         <div class="school-recommendation-container" style="background-color: #fff; border-radius: 8px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); padding: 20px; margin-bottom: 30px;">
             <table class="scale-data-table" id="recommendationTable">
                 <thead>
@@ -272,6 +273,23 @@
                     </tr>
                 </tbody>
             </table>
+            
+            <!-- 추가 평가 정보 -->
+            <div style="margin-top: 25px; padding: 15px; background-color: #f9f9f9; border-radius: 8px;">
+                <h3 style="font-size: 16px; margin-bottom: 15px; color: #333; border-bottom: 1px solid #ddd; padding-bottom: 8px;">추천 근거</h3>
+                <ul style="list-style-type: none; padding: 0; margin: 0;">
+                    <li style="padding: 8px 0; border-bottom: 1px dotted #eee;">
+                        <strong>합격가능성 평가:</strong> <span id="admissionPossibility">분석 중...</span>
+                    </li>
+                    <li style="padding: 8px 0; border-bottom: 1px dotted #eee;">
+                        <strong>학업성취도 평가:</strong> <span id="academicEvaluation">분석 중...</span>
+                    </li>
+                    <li style="padding: 8px 0;">
+                        <strong>대입전형 평가:</strong> <span id="admissionTypeEvaluation">분석 중...</span>
+                    </li>
+                </ul>
+            </div>
+            
             <p style="margin-top: 15px; color: #666; font-size: 14px; text-align: center;">
                 * 이 추천 결과는 학생의 적성과 학업 성취도를 바탕으로 한 참고용 정보입니다.
             </p>
@@ -298,8 +316,33 @@
                     </tr>
                 </tbody>
             </table>
+            
+            <!-- 대입전략 상세 내용 -->
+            <div style="margin-top: 30px;">
+                <div style="background-color: #f9f9f9; border-radius: 8px; padding: 20px;">
+                    <h3 style="font-size: 16px; margin: 0 0 15px 0; color: #333; border-bottom: 1px solid #ddd; padding-bottom: 8px;">교과 대비 전략</h3>
+                    <p style="line-height: 1.6; margin: 0 0 10px 0;">
+                        내면학업수행능력이 상위 43% 수준으로 장기적으로는 내신 성적의 안정화를 위해 학습 루틴을 고도화하고
+                        중간/기말 시험 대비 학습 피드백을 학생부에 기록할 수 있도록 노력해야 합니다.
+                    </p>
+                    <p style="line-height: 1.6; margin: 0;">
+                        수행평가를 통해 교과 내용의 탐구 깊이를 보강하고, 교과세특 상에 '문제해결력', '교과내용 재구성' 등의 키워드가 드러나도록 관리해야 합니다.
+                    </p>
+                </div>
+                <div style="background-color: #f9f9f9; border-radius: 8px; padding: 20px; margin-bottom: 15px;">
+                    <h3 style="font-size: 16px; margin: 0 0 15px 0; color: #333; border-bottom: 1px solid #ddd; padding-bottom: 8px;">학생부종합형 대비 전략</h3>
+                    <p style="line-height: 1.6; margin: 0 0 10px 0;">
+                        비교과수행능력이 상위 18% 수준으로 프로젝트형 탐구 활동 또는 교내외 발표 및 자율보고서에 참여를 통해 비교과 포트폴리오를 심화시켜야 하며,
+                        수행평가에서 자신의 탐구과정을 상세히 기록해야합니다. 
+                    </p>
+                    <p style="line-height: 1.6; margin: 0;">
+                        교과 연계 발표 주제 및 독서활동 기록을 풍부하게 채우고 탐구활동을 확장시킬 수 있도록 학기별 발표기회나 소논문 작성을 선제적으로 계획할 필요가 있습니다.
+                    </p>
+                </div>
+            </div>
+            
             <p style="margin-top: 15px; color: #666; font-size: 14px; text-align: center;">
-                * 이 대입전략은 학생의 6척도 프로파일과 학업 성취도를 바탕으로 한 참고용 정보입니다.
+                * 이 대입전략은 학생의 고교적성과 입시성향, 학업 성취도를 바탕으로 한 참고용 정보입니다.
             </p>
         </div>
         
@@ -381,14 +424,62 @@
                     
                     // 고교 추천 결과 처리
                     const recommendations = getHighSchoolRecommendations(studentData);
-                    document.getElementById('firstChoice').textContent = recommendations[1] || '조건에 맞는 추천 없음';
-                    document.getElementById('secondChoice').textContent = recommendations[2] || '조건에 맞는 추천 없음';
-                    document.getElementById('thirdChoice').textContent = recommendations[3] || '조건에 맞는 추천 없음';
+                    const firstChoice = document.getElementById('firstChoice');
+                    const secondChoice = document.getElementById('secondChoice');
+                    const thirdChoice = document.getElementById('thirdChoice');
+                    
+                    firstChoice.textContent = recommendations[1] || '조건에 맞는 추천 없음';
+                    secondChoice.textContent = recommendations[2] || '조건에 맞는 추천 없음';
+                    thirdChoice.textContent = recommendations[3] || '조건에 맞는 추천 없음';
+                    
+                    // 추천 학교 텍스트 스타일 적용 (볼드체만 적용)
+                    firstChoice.style.fontWeight = 'bold';
+                    secondChoice.style.fontWeight = 'bold';
+                    thirdChoice.style.fontWeight = 'bold';
+                    
+                    // 추가 평가 정보 채우기
+                    // 1. 합격가능성 평가
+                    const admissionPossibilityEl = document.getElementById('admissionPossibility');
+                    admissionPossibilityEl.textContent = `B등급과목개수 ${studentData.bGradeCount}개로 지원 시 합격가능성이 있습니다.`;
+                    
+                    // 2. 학업성취도 평가 
+                    const englishPercentile = calculatePercentile(studentData.academicData.english.zScore);
+                    const mathPercentile = calculatePercentile(studentData.academicData.math.zScore);
+                    const englishRank = (100 - englishPercentile).toFixed(1);
+                    const mathRank = (100 - mathPercentile).toFixed(1);
+                    
+                    const academicEvaluationEl = document.getElementById('academicEvaluation');
+                    // academicEvaluationEl.textContent = `학업성취도가 영어, 수학 각각 상위 ${englishRank}%, 상위 ${mathRank}%로 고등학교 입학 후, 성적관리에 유리합니다.`;
+                    academicEvaluationEl.textContent = `학업성취도가 영어, 수학 각각 전체 응답자 중 상위 1%, 상위 1%로 고등학교 입학 후, 성적관리에 유리합니다.`;
+
+
+                    // 3. 대입전형 평가
+                    // quadrantData.x 값이 종합형(+)/교과형(-) 점수, y 값이 서류형(+)/면접형(-) 점수
+                    const comprehensiveX = studentData.quadrantData.x;
+                    const documentY = studentData.quadrantData.y;
+                    
+                    // 교과형과 종합형 중 더 낮은 점수를 가진 영역 파악 (x값이 음수면 교과형 중심, 양수면 종합형 중심)
+                    const focusArea = comprehensiveX > 0 ? '비교과활동' : '교과학업';
+                    
+                    // 백분위 계산 (여기서는 -25~25 범위의 값을 0~100 백분위로 변환한다고 가정)
+                    // 실제로는 더 복잡한 계산식이 필요할 수 있습니다
+                    const comprehensivePercentile = ((comprehensiveX + 25) / 50 * 100).toFixed(1);
+                    const documentPercentile = ((documentY + 25) / 50 * 100).toFixed(1);
+                    
+                    const admissionTypeEvaluationEl = document.getElementById('admissionTypeEvaluation');
+                    admissionTypeEvaluationEl.textContent = `종합형 인재점수가 상위 ${comprehensivePercentile}%, 교과형 인재점수가 상위 ${(100-comprehensivePercentile).toFixed(1)}%로, ${focusArea}을 적극적으로 공략하는 것이 유리합니다.`;
                     
                     // 대입전략 결과 처리
                     const strategies = getUniversityStrategies(studentData);
-                    document.getElementById('firstStrategy').textContent = strategies[1] || '조건에 맞는 추천 없음';
-                    document.getElementById('secondStrategy').textContent = strategies[2] || '조건에 맞는 추천 없음';
+                    const firstStrategy = document.getElementById('firstStrategy');
+                    const secondStrategy = document.getElementById('secondStrategy');
+                    
+                    firstStrategy.textContent = strategies[1] || '조건에 맞는 추천 없음';
+                    secondStrategy.textContent = strategies[2] || '조건에 맞는 추천 없음';
+                    
+                    // 전략 텍스트 스타일 적용 (볼드체)
+                    firstStrategy.style.fontWeight = 'bold';
+                    secondStrategy.style.fontWeight = 'bold';
                     
                     // 입시 로드맵 생성 및 렌더링
                     const roadmapData = generateAdmissionRoadmap(studentData);

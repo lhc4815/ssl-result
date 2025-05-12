@@ -18,10 +18,10 @@ function getUniversityStrategies(studentData) {
         1: null, 
         2: null
     };
-    
+
     // 모든 순위를 "조건에 맞는 추천 없음"으로 설정
-    strategies[1] = "조건에 맞는 추천 없음";
-    strategies[2] = "조건에 맞는 추천 없음";
+    strategies[1] = "의치한약수계열";
+    strategies[2] = "SKY공학, 생명과학계열";
     
     // 빈 추천 결과 반환
     return strategies;

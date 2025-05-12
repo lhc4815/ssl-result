@@ -1,0 +1,59 @@
+/* 네이비 테마 스타일 */
+:root {
+    --main-navy: #1a3a5f;
+    --light-navy: #2c5282;
+    --dark-navy: #0d2846;
+    --navy-accent: #3182ce;
+    --navy-light-bg: #e6f0ff;
+    --navy-text: #2d3748;
+    --navy-line: #cbd5e0;
+}
+
+/* 헤더 스타일 */
+h1 {
+    color: var(--main-navy);
+    border-bottom: 2px solid var(--main-navy) !important;
+}
+
+h2 {
+    color: var(--navy-text);
+    border-left: 5px solid var(--main-navy) !important;
+}
+
+/* 테이블 스타일 */
+.scale-data-table th {
+    background-color: var(--main-navy) !important;
+    color: white;
+}
+
+.student-info {
+    border: 1px solid var(--navy-line);
+    border-left: 5px solid var(--main-navy);
+    box-shadow: 0 2px 10px rgba(26, 58, 95, 0.1);
+}
+
+/* 컨테이너 스타일 */
+.chart-container,
+.radar-chart-container,
+.normal-chart-container,
+.school-recommendation-container,
+.university-strategy-container,
+.admission-roadmap-container,
+.academic-improvement-container,
+.overall-assessment-container {
+    border: 1px solid var(--navy-line);
+    border-top: 3px solid var(--main-navy);
+    box-shadow: 0 2px 10px rgba(26, 58, 95, 0.1);
+}
+
+/* 버튼 스타일 (있을 경우) */
+button, 
+input[type="submit"] {
+    background-color: var(--main-navy);
+    color: white;
+}
+
+button:hover, 
+input[type="submit"]:hover {
+    background-color: var(--light-navy);
+}

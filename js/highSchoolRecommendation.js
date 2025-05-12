@@ -20,10 +20,10 @@ function getHighSchoolRecommendations(studentData) {
         3: null
     };
     
-    // 모든 지망을 "조건에 맞는 추천 없음"으로 설정
-    recommendations[1] = "조건에 맞는 추천 없음";
-    recommendations[2] = "조건에 맞는 추천 없음";
-    recommendations[3] = "조건에 맞는 추천 없음";
+    // 모든 지망을 "예시시"으로 설정
+    recommendations[1] = "하나고등학교";
+    recommendations[2] = "서울형자사고";
+    recommendations[3] = "지역일반고";
     
     // 빈 추천 결과 반환
     return recommendations;
