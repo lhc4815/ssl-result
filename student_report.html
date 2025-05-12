@@ -781,6 +781,12 @@
         function createAcademicChart(studentData) {
             const ctx = document.getElementById('academicChart').getContext('2d');
             
+            // 임의의 평균 점수 설정 (실제 데이터가 없으므로)
+            const averageScores = {
+                english: 25, // 영어 평균 점수
+                math: 28    // 수학 평균 점수
+            };
+            
             new Chart(ctx, {
                 type: 'bar',
                 data: {
@@ -799,6 +805,22 @@
                             borderColor: [
                                 'rgb(54, 162, 235)',
                                 'rgb(255, 159, 64)'
+                            ],
+                            borderWidth: 1
+                        },
+                        {
+                            label: '전체평균',
+                            data: [
+                                averageScores.english,
+                                averageScores.math
+                            ],
+                            backgroundColor: [
+                                'rgba(201, 203, 207, 0.5)',
+                                'rgba(201, 203, 207, 0.5)'
+                            ],
+                            borderColor: [
+                                'rgb(201, 203, 207)',
+                                'rgb(201, 203, 207)'
                             ],
                             borderWidth: 1
                         }
