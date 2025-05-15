@@ -8,6 +8,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
     <script src="js/dataProcessor.js"></script>
     <script src="js/data.js"></script>
+    <script src="js/statisticsProcessor.js"></script>
     <script src="js/highSchoolRecommendation.js"></script>
     <script src="js/universityStrategy.js"></script>
     <script src="js/admissionRoadmap.js"></script>
@@ -238,9 +239,34 @@
         
         <!-- 4. 입시성향분석 - 교과형 vs 종합형, 서류형 vs 면접형 -->
         <h2>4. 입시성향분석 - 교과형 vs 종합형, 서류형 vs 면접형</h2>
-        <div class="chart-container" style="height: 550px; padding-bottom: 100px;">
-            <canvas id="quadrantChart" style="margin-bottom: 50px;"></canvas>
-            <div style="margin-top: 30px; margin-bottom: 20px; padding: 15px; background-color: #f9f9f9; border-radius: 8px; width: 90%; margin-left: auto; margin-right: auto;">
+        <div class="chart-container" style="height: 900px; padding-bottom: 300px; margin-bottom: 100px;">
+            <!-- 분석 결과 수치 표시 -->
+            <div id="quadrantAnalysisData" style="margin-bottom: 20px; padding: 15px; background-color: #f9f9f9; border-radius: 8px; width: 90%; margin-left: auto; margin-right: auto;">
+                <table style="width: 100%; border-collapse: collapse; margin-bottom: 10px;">
+                    <tr style="border-bottom: 1px solid #ddd;">
+                        <th style="text-align: left; padding: 8px; width: 25%;">구분</th>
+                        <th style="text-align: center; padding: 8px; width: 25%;">좌표값</th>
+                        <th style="text-align: center; padding: 8px; width: 25%;">백분위</th>
+                        <th style="text-align: center; padding: 8px; width: 25%;">해석</th>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #eee;">
+                        <td style="text-align: left; padding: 8px; font-weight: bold;">교과형(-) ↔ 종합형(+)</td>
+                        <td id="xCoordValue" style="text-align: center; padding: 8px;">-</td>
+                        <td id="xPercentileValue" style="text-align: center; padding: 8px;">-</td>
+                        <td id="xInterpretation" style="text-align: center; padding: 8px;">-</td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: left; padding: 8px; font-weight: bold;">면접형(-) ↔ 서류형(+)</td>
+                        <td id="yCoordValue" style="text-align: center; padding: 8px;">-</td>
+                        <td id="yPercentileValue" style="text-align: center; padding: 8px;">-</td>
+                        <td id="yInterpretation" style="text-align: center; padding: 8px;">-</td>
+                    </tr>
+                </table>
+            </div>
+            
+            <canvas id="quadrantChart" style="margin-bottom: 30px;"></canvas>
+            
+            <div style="margin-top: 10px; margin-bottom: 20px; padding: 15px; background-color: #f9f9f9; border-radius: 8px; width: 90%; margin-left: auto; margin-right: auto;">
                 <p style="margin: 0; color: #555; font-size: 14px; text-align: left; line-height: 1.5;">
                     교과형/종합형과 서류형/면접형 중 학생에게 더 유리한 입시전형 성향을 분석하며 향후 고교 활동 및 대입 준비 방향을 설정하는 기준으로 활용할 수 있습니다.
                 </p>
@@ -254,7 +280,7 @@
         </div>
         
         <!-- 6. 고교 추천 결과 -->
-        <h2>6. 진학고교 추천</h2>
+        <h2>6. 진학고교추천</h2>
         <div class="school-recommendation-container" style="background-color: #fff; border-radius: 8px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); padding: 20px; margin-bottom: 30px;">
             <table class="scale-data-table" id="recommendationTable">
                 <thead>
@@ -271,10 +297,6 @@
                     <tr>
                         <td><strong>2지망</strong></td>
                         <td id="secondChoice">분석 중...</td>
-                    </tr>
-                    <tr>
-                        <td><strong>3지망</strong></td>
-                        <td id="thirdChoice">분석 중...</td>
                     </tr>
                 </tbody>
             </table>
@@ -301,7 +323,7 @@
         </div>
         
         <!-- 7. 대입전략 수립 -->
-        <h2>7. 계열별 대입전략 수립</h2>
+        <h2>7. 대입계열추천 및 전략</h2>
         <div class="university-strategy-container" style="background-color: #fff; border-radius: 8px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); padding: 20px; margin-bottom: 30px;">
             <table class="scale-data-table" id="strategyTable">
                 <thead>
@@ -322,26 +344,47 @@
                 </tbody>
             </table>
             
+            <!-- 추천 근거 설명 -->
+            <div style="margin-top: 25px; padding: 15px; background-color: #f9f9f9; border-radius: 8px; margin-bottom: 20px;">
+                <h3 style="font-size: 16px; margin-bottom: 15px; color: #333; border-bottom: 1px solid #ddd; padding-bottom: 8px;">계열 추천 근거</h3>
+                <ul style="list-style-type: none; padding: 0; margin: 0;">
+                    <li style="padding: 8px 0; border-bottom: 1px dotted #eee;">
+                        <strong>언어정보처리능력:</strong> <span id="languageScore">분석 중...</span> 
+                    </li>
+                    <li style="padding: 8px 0; border-bottom: 1px dotted #eee;">
+                        <strong>공학적사고력:</strong> <span id="engineeringScore">분석 중...</span> 
+                    </li>
+                    <li style="padding: 8px 0; border-bottom: 1px dotted #eee;">
+                        <strong>의약학적성:</strong> <span id="medicalScore">분석 중...</span> 
+                    </li>
+                </ul>
+                
+                <div style="margin-top: 15px; padding: 10px; background-color: #f0f0f0; border-radius: 6px;">
+                    <p id="recommendationExplanation" style="margin: 0; line-height: 1.5; color: #333;">분석 중...</p>
+                    <p id="potentialMessage" style="margin-top: 10px; font-style: italic; color: #555;">분석 중...</p>
+                </div>
+            </div>
+            
             <!-- 대입전략 상세 내용 -->
-            <div style="margin-top: 30px;">
+            <div style="margin-top: 20px;">
                 <div style="background-color: #f9f9f9; border-radius: 8px; padding: 20px;">
-                    <h3 style="font-size: 16px; margin: 0 0 15px 0; color: #333; border-bottom: 1px solid #ddd; padding-bottom: 8px;">교과 대비 전략</h3>
+                    <h3 style="font-size: 16px; margin: 0 0 15px 0; color: #333; border-bottom: 1px solid #ddd; padding-bottom: 8px;">교과전형 대비 전략</h3>
                     <p style="line-height: 1.6; margin: 0 0 10px 0;">
-                        내면학업수행능력이 상위 43% 수준으로 장기적으로는 내신 성적의 안정화를 위해 학습 루틴을 고도화하고
-                        중간/기말 시험 대비 학습 피드백을 학생부에 기록할 수 있도록 노력해야 합니다.
+                        내면학업수행능력이 <strong>상위 43% 수준</strong>으로, 교과전형 성공을 위해서는 학습 루틴을 체계화하고
+                        고교 1학년 내신 관리에 특히 집중해야 합니다. 주요교과(국영수과)의 A등급 비율을 높이는 것이 가장 중요합니다.
                     </p>
                     <p style="line-height: 1.6; margin: 0;">
-                        수행평가를 통해 교과 내용의 탐구 깊이를 보강하고, 교과세특 상에 '문제해결력', '교과내용 재구성' 등의 키워드가 드러나도록 관리해야 합니다.
+                        우수 대학의 교과전형은 성적 외에도 세부능력특기사항(교과세특)을 평가하므로, 수행평가를 통해 '문제해결력', '교과내용 재구성' 등의 키워드가 기록되도록 관리해야 합니다.
                     </p>
                 </div>
                 <div style="background-color: #f9f9f9; border-radius: 8px; padding: 20px; margin-bottom: 15px;">
                     <h3 style="font-size: 16px; margin: 0 0 15px 0; color: #333; border-bottom: 1px solid #ddd; padding-bottom: 8px;">학생부종합전형 대비 전략</h3>
                     <p style="line-height: 1.6; margin: 0 0 10px 0;">
-                        비교과수행능력이 상위 18% 수준으로 프로젝트형 탐구 활동 또는 교내외 발표 및 자율보고서에 참여를 통해 비교과 포트폴리오를 심화시켜야 하며,
-                        수행평가에서 자신의 탐구과정을 상세히 기록해야합니다. 
+                        비교과수행능력이 <strong>상위 18% 수준</strong>으로 학생부종합전형 성공을 위해서는 생기부에 "융합적 사고력"과 "문제해결력"이 드러나는 활동이 필수적입니다.
                     </p>
                     <p style="line-height: 1.6; margin: 0;">
-                        교과 연계 발표 주제 및 독서활동 기록을 풍부하게 채우고 탐구활동을 확장시킬 수 있도록 학기별 발표기회나 소논문 작성을 선제적으로 계획할 필요가 있습니다.
+                        소논문 작성, 교내 학술대회 참여, 주요 교과목 발표 활동 등을 통해 학생부 기록을 체계적으로 관리하며,
+                        진로 관련 독서활동을 통해 인성과 발전가능성 평가요소도 함께 준비해야 합니다.
                     </p>
                 </div>
                 
@@ -353,7 +396,7 @@
                     <div style="margin-bottom: 30px; position: relative;">
                         <div style="height: 40px; background: linear-gradient(to right, #2B4C7E, #FFFFFF); border-radius: 4px; margin-bottom: 10px; position: relative;">
                             <!-- 학생 위치 표시 화살표 -->
-                            <div style="position: absolute; top: -25px; left: 15%; transform: translateX(-50%);">
+                            <div style="position: absolute; top: -25px; left: 50%; transform: translateX(-50%);">
                                 <div style="color: #FF0000; font-size: 24px; font-weight: bold;">↓</div>
                                 <div style="color: #FF0000; font-size: 12px; font-weight: bold;">해당위치</div>
                             </div>
@@ -371,7 +414,7 @@
                     <div style="position: relative;">
                         <div style="height: 40px; background: linear-gradient(to right, #2B4C7E, #FFFFFF); border-radius: 4px; margin-bottom: 10px; position: relative;">
                             <!-- 학생 위치 표시 화살표 -->
-                            <div style="position: absolute; top: -25px; left: 20%; transform: translateX(-50%);">
+                            <div style="position: absolute; top: -25px; left: 50%; transform: translateX(-50%);">
                                 <div style="color: #FF0000; font-size: 24px; font-weight: bold;">↓</div>
                                 <div style="color: #FF0000; font-size: 12px; font-weight: bold;">해당위치</div>
                             </div>
@@ -392,38 +435,7 @@
             </p>
         </div>
         
-        <!-- 8. 전체 입시 로드맵 -->
-        <h2>8. 학생부 로드맵 예시</h2>
-        <div class="admission-roadmap-container" style="background-color: #fff; border-radius: 8px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); padding: 20px; margin-bottom: 30px;">
-            <div id="roadmapContainer">
-                <!-- 로드맵이 이 곳에 렌더링됩니다 -->
-            </div>
-            <p style="margin-top: 15px; color: #666; font-size: 14px; text-align: center;">
-                * 이 입시 로드맵은 학생의 적성과 역량을 바탕으로 한 전체적인 입시 계획 참고 자료로 실제 로드맵은 상담을 거쳐 작성됩니다.
-            </p>
-        </div>
-        
-        <!-- 9. 학업개선방안 -->
-        <h2>9. 학업개선방안</h2>
-        <div class="academic-improvement-container" style="background-color: #fff; border-radius: 8px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); padding: 20px; margin-bottom: 30px;">
-            <div id="academicImprovementContainer">
-                <!-- 학업개선방안이 이 곳에 렌더링됩니다 -->
-            </div>
-            <p style="margin-top: 15px; color: #666; font-size: 14px; text-align: center;">
-                * 취약 과목, 우선적으로 신경써야할 과목에 대한 조언 및 전략을 제시합니다.
-            </p>
-        </div>
-        
-        <!-- 10. 종합의견 -->
-        <h2>10. 종합의견</h2>
-        <div class="overall-assessment-container" style="background-color: #fff; border-radius: 8px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); padding: 20px; margin-bottom: 30px;">
-            <div id="overallAssessmentContainer">
-                <!-- 종합의견이 이 곳에 렌더링됩니다 -->
-            </div>
-            <p style="margin-top: 15px; color: #666; font-size: 14px; text-align: center;">
-                * 학생의 전체적인 성향과 역량을 종합적으로 평가한 의견입니다.
-            </p>
-        </div>
+        <!-- 8번, 9번, 10번 항목 삭제됨 -->
     </div>
     
     <script>
@@ -468,52 +480,69 @@
                     createQuadrantChart(studentData);
                     createAcademicChart(studentData);
                     
-                    // 고교 추천 결과 처리
+                    // 고교 추천 결과 처리 (2지망까지만)
                     const recommendations = getHighSchoolRecommendations(studentData);
                     const firstChoice = document.getElementById('firstChoice');
                     const secondChoice = document.getElementById('secondChoice');
-                    const thirdChoice = document.getElementById('thirdChoice');
                     
                     firstChoice.textContent = recommendations[1] || '조건에 맞는 추천 없음';
                     secondChoice.textContent = recommendations[2] || '조건에 맞는 추천 없음';
-                    thirdChoice.textContent = recommendations[3] || '조건에 맞는 추천 없음';
                     
-                    // 추천 학교 텍스트 스타일 적용 (볼드체만 적용)
+                    // 추천 학교 텍스트 스타일 적용
                     firstChoice.style.fontWeight = 'bold';
                     secondChoice.style.fontWeight = 'bold';
-                    thirdChoice.style.fontWeight = 'bold';
                     
                     // 추가 평가 정보 채우기
-                    // 1. 합격가능성 평가
+                    // 1. 합격가능성 평가 - B등급과목 개수에 따라 다른 문구 표시
                     const admissionPossibilityEl = document.getElementById('admissionPossibility');
-                    admissionPossibilityEl.textContent = `B등급과목개수 ${studentData.bGradeCount}개로 지원 시 합격가능성이 있습니다.`;
+                    if (studentData.bGradeCount === 0) {
+                        admissionPossibilityEl.textContent = `내신 성적 중 B등급과목 ${studentData.bGradeCount}개로 지망 학교 지원 시 충분한 합격가능성이 있습니다.`;
+                    } else {
+                        admissionPossibilityEl.textContent = `내신 성적 중 B등급과목 ${studentData.bGradeCount}개로 전략적인 지망 학교 선정 필요성이 있습니다.`;
+                    }
                     
-                    // 2. 학업성취도 평가 
+                    // 2. 학업성취도 평가 - 실제 통계 기반 계산값과 조건부 문구 활용
                     const englishPercentile = calculatePercentile(studentData.academicData.english.zScore);
                     const mathPercentile = calculatePercentile(studentData.academicData.math.zScore);
-                    const englishRank = (100 - englishPercentile).toFixed(1);
-                    const mathRank = (100 - mathPercentile).toFixed(1);
+                    const englishRank = Math.min(99, Math.max(1, Math.round(100 - englishPercentile)));
+                    const mathRank = Math.min(99, Math.max(1, Math.round(100 - mathPercentile)));
+                    
+                    // 상위 30% 기준점
+                    const isEnglishGood = englishRank <= 30;  // 영어 상위 30% 이내
+                    const isMathGood = mathRank <= 30;        // 수학 상위 30% 이내
                     
                     const academicEvaluationEl = document.getElementById('academicEvaluation');
-                    // academicEvaluationEl.textContent = `학업성취도가 영어, 수학 각각 상위 ${englishRank}%, 상위 ${mathRank}%로 고등학교 입학 후, 성적관리에 유리합니다.`;
-                    academicEvaluationEl.textContent = `학업성취도가 영어, 수학 각각 전체 응답자 중 상위 1%, 상위 1%로 고등학교 입학 후, 성적관리에 유리합니다.`;
+                    
+                    // 조건에 따른 문구 선택
+                    let evaluationText = '';
+                    if (isEnglishGood && isMathGood) {
+                        evaluationText = "지망 고등학교 진학 후에도 우수한 성적 관리가 가능할 것으로 예상됩니다.";
+                    } else if (!isEnglishGood && isMathGood) {
+                        evaluationText = "지망 고등학교 진학 후에도 성적 관리를 위해 영어교과 보충심화가 필요합니다.";
+                    } else if (isEnglishGood && !isMathGood) {
+                        evaluationText = "지망 고등학교 진학 후에도 성적 관리를 위해 수학교과 보충심화가 필요합니다.";
+                    } else { // 둘 다 미만
+                        evaluationText = "지망 고등학교 진학 후에도 성적 관리를 위해 영어 및 수학 교과 보충심화가 필요합니다.";
+                    }
+                    
+                    academicEvaluationEl.textContent = `학업성취도가 영어, 수학 각각 전체 응시자 중 상위 ${englishRank}%, 상위 ${mathRank}%로, ${evaluationText}`;
 
-
-                    // 3. 대입전형 평가
+                    // 3. 대입전형 평가 - 실제 통계 기반 계산값 활용
                     // quadrantData.x 값이 종합형(+)/교과형(-) 점수, y 값이 서류형(+)/면접형(-) 점수
                     const comprehensiveX = studentData.quadrantData.x;
                     const documentY = studentData.quadrantData.y;
                     
-                    // 교과형과 종합형 중 더 낮은 점수를 가진 영역 파악 (x값이 음수면 교과형 중심, 양수면 종합형 중심)
-                    const focusArea = comprehensiveX > 0 ? '비교과활동' : '교과학업';
+                    // 백분위 계산 및 1~99 범위 보장
+                    const comprehensivePercentile = Math.min(99, Math.max(1, Math.round(((comprehensiveX + 25) / 50 * 100))));
+                    const subjectPercentile = Math.min(99, Math.max(1, Math.round(((25 - comprehensiveX) / 50 * 100))));
                     
-                    // 백분위 계산 (여기서는 -25~25 범위의 값을 0~100 백분위로 변환한다고 가정)
-                    // 실제로는 더 복잡한 계산식이 필요할 수 있습니다
-                    const comprehensivePercentile = ((comprehensiveX + 25) / 50 * 100).toFixed(1);
-                    const documentPercentile = ((documentY + 25) / 50 * 100).toFixed(1);
+                    // 종합형과 교과형 비교하여 적절한 조언 문구 생성
+                    const recommendationText = comprehensivePercentile > subjectPercentile 
+                        ? '비교과활동을 적극적으로 공략하는 것이 유리합니다.'
+                        : '교과활동을 적극적으로 공략하는 것이 유리합니다.';
                     
                     const admissionTypeEvaluationEl = document.getElementById('admissionTypeEvaluation');
-                    admissionTypeEvaluationEl.textContent = `종합형 인재점수가 상위 ${comprehensivePercentile}%, 교과형 인재점수가 상위 ${(100-comprehensivePercentile).toFixed(1)}%로, ${focusArea}을 적극적으로 공략하는 것이 유리합니다.`;
+                    admissionTypeEvaluationEl.textContent = `학생부종합전형 적합도 ${comprehensivePercentile}%, 학생부교과전형 적합도 ${subjectPercentile}%로, ${recommendationText}`;
                     
                     // 대입전략 결과 처리
                     const strategies = getUniversityStrategies(studentData);
@@ -527,17 +556,76 @@
                     firstStrategy.style.fontWeight = 'bold';
                     secondStrategy.style.fontWeight = 'bold';
                     
-                    // 입시 로드맵 생성 및 렌더링
-                    const roadmapData = generateAdmissionRoadmap(studentData);
-                    renderAdmissionRoadmap('roadmapContainer', roadmapData);
+                    // 계열 추천 근거 점수 표시
+                    const languageScore = studentData.scaleScores["languageProcessing"] || 0;
+                    const engineeringScore = studentData.scaleScores["engineeringThinking"] || 0;
+                    const medicalScore = studentData.scaleScores["medicalAptitude"] || 0;
                     
-                    // 학업개선방안 생성 및 렌더링
-                    const improvementData = generateAcademicImprovements(studentData);
-                    renderAcademicImprovements('academicImprovementContainer', improvementData);
+                    // 각 점수의 퍼센타일 계산
+                    const languageZScore = studentData.scaleZScores["languageProcessing"] || 0;
+                    const engineeringZScore = studentData.scaleZScores["engineeringThinking"] || 0;
+                    const medicalZScore = studentData.scaleZScores["medicalAptitude"] || 0;
                     
-                    // 종합의견 생성 및 렌더링
-                    const assessmentData = generateOverallAssessment(studentData);
-                    renderOverallAssessment('overallAssessmentContainer', assessmentData);
+                    const languagePercentile = calculatePercentile(languageZScore);
+                    const engineeringPercentile = calculatePercentile(engineeringZScore);
+                    const medicalPercentile = calculatePercentile(medicalZScore);
+                    
+                    // 상위 백분위 계산
+                    const languageTopPercentile = (100 - languagePercentile).toFixed(1);
+                    const engineeringTopPercentile = (100 - engineeringPercentile).toFixed(1);
+                    const medicalTopPercentile = (100 - medicalPercentile).toFixed(1);
+                    
+                    // 추천 근거에 점수 및 백분위 표시
+                    document.getElementById('languageScore').textContent = 
+                        `${languageScore}점 (상위 ${languageTopPercentile}%)`;
+                    
+                    document.getElementById('engineeringScore').textContent = 
+                        `${engineeringScore}점 (상위 ${engineeringTopPercentile}%)`;
+                    
+                    document.getElementById('medicalScore').textContent = 
+                        `${medicalScore}점 (상위 ${medicalTopPercentile}%)`;
+                    
+                    // 점수 비교하여 순위 결정 및 설명 생성
+                    const scoreData = [
+                        { name: "언어정보처리능력", score: languageScore, field: "SKY인문사회계열", rank: null, percentile: parseFloat(languageTopPercentile) },
+                        { name: "공학적사고력", score: engineeringScore, field: "SKY이공계열", rank: null, percentile: parseFloat(engineeringTopPercentile) },
+                        { name: "의약학적성", score: medicalScore, field: "의치한약수 계열", rank: null, percentile: parseFloat(medicalTopPercentile) }
+                    ];
+                    
+                    // 점수 기준 내림차순 정렬
+                    scoreData.sort((a, b) => b.score - a.score);
+                    
+                    // 순위 할당
+                    scoreData.forEach((item, index) => {
+                        item.rank = index + 1;
+                    });
+                    
+                    // 추천 근거 설명 생성
+                    const topScore = scoreData[0];
+                    const secondScore = scoreData[1];
+                    const recommendationExplanation = document.getElementById('recommendationExplanation');
+                    
+                    recommendationExplanation.innerHTML = `
+                        <strong>${topScore.name}</strong> 점수(${topScore.score}점)가 가장 높아 <strong>${topScore.field}</strong>을 1순위로, 
+                        <strong>${secondScore.name}</strong> 점수(${secondScore.score}점)가 두 번째로 높아 <strong>${secondScore.field}</strong>을 2순위로 추천합니다.
+                    `;
+                    
+                    // 상위 50% 이상인 경우 희망 계열 진학 가능성 문구 추가
+                    const potentialMessage = document.getElementById('potentialMessage');
+                    const above50Percent = scoreData.filter(item => item.percentile >= 50);
+                    
+                    if (above50Percent.length > 0) {
+                        const fields = above50Percent.map(item => `<strong>${item.field}</strong>`).join(', ');
+                        potentialMessage.innerHTML = `
+                            ${fields} 적성 점수가 상위 50% 이상으로, 학생이 희망하는 경우 해당 계열로 진학이 가능합니다.
+                        `;
+                    } else {
+                        potentialMessage.innerHTML = `
+                            모든 계열의 적성 점수가 상위 50% 미만으로, 희망 계열 진학을 위해서는 추가적인 학습이 필요합니다.
+                        `;
+                    }
+                    
+                    // 입시 로드맵 코드 제거됨
                     
                     console.log('학생 데이터 로드 완료: ', studentData.name);
                 })
@@ -634,22 +722,21 @@
             });
         }
         
-        // 정규분포 차트 생성
+        // 정규분포 차트 생성 (Z-Score 기준)
         function createNormalDistCharts(studentData) {
             SCALES.forEach(scale => {
                 const chartId = scale.key + 'Chart';
                 const ctx = document.getElementById(chartId).getContext('2d');
-                const score = studentData.scaleScores[scale.key];
                 const zScore = studentData.scaleZScores[scale.key]; // Z점수 직접 사용
                 const percentile = calculatePercentile(zScore);
                 
-                const normalDistData = generateNormalDistributionData(NORMAL_DIST.mean, NORMAL_DIST.stdDev, NORMAL_DIST.minScore, NORMAL_DIST.maxScore);
-                const studentAreaData = normalDistData.filter(point => point.x >= score);
+                // Z-Score 기반으로 표준 정규분포 데이터 생성 (-3 ~ 3)
+                const normalDistData = generateStandardNormalDistributionData(-3, 3, 100);
+                // 학생의 Z-Score보다 큰 영역 (상위 영역)
+                const studentAreaData = normalDistData.filter(point => point.x >= zScore);
                 
-                // 학생 위치 y값 계산
-                const normalFactor = 1 / (NORMAL_DIST.stdDev * Math.sqrt(2 * Math.PI));
-                const exponent = -Math.pow((score - NORMAL_DIST.mean) / NORMAL_DIST.stdDev, 2) / 2;
-                const studentY = normalFactor * Math.exp(exponent);
+                // 학생 위치 y값 계산 (표준정규분포 함수)
+                const studentY = (1 / Math.sqrt(2 * Math.PI)) * Math.exp(-(Math.pow(zScore, 2) / 2));
                 
                 new Chart(ctx, {
                     type: 'line',
@@ -677,7 +764,7 @@
                             },
                             {
                                 label: '학생 위치',
-                                data: [{ x: score, y: studentY }],
+                                data: [{ x: zScore, y: studentY }],
                                 backgroundColor: scale.color,
                                 borderColor: scale.color,
                                 pointRadius: 8,
@@ -692,9 +779,9 @@
                         scales: {
                             x: {
                                 type: 'linear',
-                                min: NORMAL_DIST.minScore,
-                                max: NORMAL_DIST.maxScore,
-                                title: { display: true, text: '점수', font: { weight: 'bold' } }
+                                min: -3,
+                                max: 3,
+                                title: { display: true, text: 'Z-Score', font: { weight: 'bold' } }
                             },
                             y: {
                                 beginAtZero: true,
@@ -729,6 +816,21 @@
             });
         }
         
+        // 표준 정규분포 데이터 생성 함수 (Z-Score 기준)
+        function generateStandardNormalDistributionData(min, max, points) {
+            const data = [];
+            const step = (max - min) / points;
+            
+            for (let i = 0; i <= points; i++) {
+                const x = min + (step * i); // Z-Score
+                // 표준정규분포 함수 (평균 0, 표준편차 1)
+                const y = (1 / Math.sqrt(2 * Math.PI)) * Math.exp(-(Math.pow(x, 2) / 2));
+                data.push({ x, y });
+            }
+            
+            return data;
+        }
+        
         // 점수 테이블 업데이트
         function updateScaleTable(studentData) {
             const tableBody = document.getElementById('scaleTableBody');
@@ -758,13 +860,42 @@
         function createQuadrantChart(studentData) {
             const ctx = document.getElementById('quadrantChart').getContext('2d');
             
+            // 좌표값 및 백분위 계산
+            const xCoord = studentData.quadrantData.x;
+            const yCoord = studentData.quadrantData.y;
+            
+            // 백분위 계산 (0~100 범위)
+            const xPercentile = Math.min(99, Math.max(1, Math.round(((xCoord + 25) / 50 * 100))));
+            const subjectPercentile = Math.min(99, Math.max(1, Math.round(((25 - xCoord) / 50 * 100))));
+            const yPercentile = Math.min(99, Math.max(1, Math.round(((yCoord + 25) / 50 * 100))));
+            const interviewPercentile = Math.min(99, Math.max(1, Math.round(((25 - yCoord) / 50 * 100))));
+            
+            // 해석 생성
+            const xInterpretation = xCoord >= 0 ? 
+                '종합형 성향 강함' : 
+                '교과형 성향 강함';
+            
+            const yInterpretation = yCoord >= 0 ? 
+                '서류형 성향 강함' : 
+                '면접형 성향 강함';
+            
+            // 결과를 테이블에 표시
+            document.getElementById('xCoordValue').textContent = xCoord.toFixed(1);
+            document.getElementById('xPercentileValue').textContent = `종합형 ${xPercentile}%, 교과형 ${subjectPercentile}%`;
+            document.getElementById('xInterpretation').textContent = xInterpretation;
+            
+            document.getElementById('yCoordValue').textContent = yCoord.toFixed(1);
+            document.getElementById('yPercentileValue').textContent = `서류형 ${yPercentile}%, 면접형 ${interviewPercentile}%`;
+            document.getElementById('yInterpretation').textContent = yInterpretation;
+            
+            // 차트 생성
             new Chart(ctx, {
                 type: 'scatter',
                 data: {
                     datasets: [
                         {
                             label: '학생 위치',
-                            data: [{ x: studentData.quadrantData.x, y: studentData.quadrantData.y }],
+                            data: [{ x: xCoord, y: yCoord }],
                             backgroundColor: 'rgba(255, 99, 132, 1)',
                             borderColor: 'rgba(255, 99, 132, 1)',
                             pointRadius: 10,
@@ -775,34 +906,34 @@
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                scales: {
-                    x: {
-                        min: -25,
-                        max: 25,
-                        title: { 
-                            display: true, 
-                            text: '교과형(-) ⟷ 종합형(+)', 
-                            font: { weight: 'bold' } 
+                    scales: {
+                        x: {
+                            min: -25,
+                            max: 25,
+                            title: { 
+                                display: true, 
+                                text: '교과형(-) ⟷ 종합형(+)', 
+                                font: { weight: 'bold' } 
+                            },
+                            grid: {
+                                color: context => context.tick.value === 0 ? 'rgba(0, 0, 0, 0.5)' : 'rgba(0, 0, 0, 0.1)',
+                                lineWidth: context => context.tick.value === 0 ? 2 : 1
+                            }
                         },
-                        grid: {
-                            color: context => context.tick.value === 0 ? 'rgba(0, 0, 0, 0.5)' : 'rgba(0, 0, 0, 0.1)',
-                            lineWidth: context => context.tick.value === 0 ? 2 : 1
+                        y: {
+                            min: -25,
+                            max: 25,
+                            title: { 
+                                display: true, 
+                                text: '면접형(-) ⟷ 서류형(+)', 
+                                font: { weight: 'bold' } 
+                            },
+                            grid: {
+                                color: context => context.tick.value === 0 ? 'rgba(0, 0, 0, 0.5)' : 'rgba(0, 0, 0, 0.1)',
+                                lineWidth: context => context.tick.value === 0 ? 2 : 1
+                            }
                         }
                     },
-                    y: {
-                        min: -25,
-                        max: 25,
-                        title: { 
-                            display: true, 
-                            text: '면접형(-) ⟷ 서류형(+)', 
-                            font: { weight: 'bold' } 
-                        },
-                        grid: {
-                            color: context => context.tick.value === 0 ? 'rgba(0, 0, 0, 0.5)' : 'rgba(0, 0, 0, 0.1)',
-                            lineWidth: context => context.tick.value === 0 ? 2 : 1
-                        }
-                    }
-                },
                     plugins: {
                         legend: { display: false },
                         title: {
@@ -901,6 +1032,7 @@
                         },
                         
                         datalabels: {
+                            display: (context) => context.datasetIndex === 0, // 첫 번째 데이터셋(학생 점수)에만 표시
                             anchor: 'end',
                             align: 'top',
                             formatter: (value, context) => {
